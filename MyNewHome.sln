@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyNewHome.API", "MyNewHome.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyNewHome.Functions", "MyNewHome.Functions\MyNewHome.Functions.csproj", "{D700F95F-0A7B-4BDF-9BF2-9A96F6E3E928}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyNewHome.ClassLibrary", "MyNewHome.ClassLibrary\MyNewHome.ClassLibrary.csproj", "{A745459B-D88B-47CE-8AAD-8AD911E133B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{D700F95F-0A7B-4BDF-9BF2-9A96F6E3E928}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D700F95F-0A7B-4BDF-9BF2-9A96F6E3E928}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D700F95F-0A7B-4BDF-9BF2-9A96F6E3E928}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A745459B-D88B-47CE-8AAD-8AD911E133B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A745459B-D88B-47CE-8AAD-8AD911E133B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A745459B-D88B-47CE-8AAD-8AD911E133B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A745459B-D88B-47CE-8AAD-8AD911E133B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

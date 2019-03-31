@@ -25,6 +25,8 @@ namespace MyNewHome.API
             var primaryKey = Configuration.GetValue<string>("Cosmos:PrimaryKey");
             services.AddSingleton(new PetService(endpointUri, primaryKey));
 
+            services.AddSingleton(Configuration);
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             // In production, the React files will be served from this directory

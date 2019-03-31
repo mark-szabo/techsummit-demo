@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
@@ -14,16 +12,18 @@ namespace MyNewHome.Controllers
     public class PetController : ControllerBase
     {
         private readonly TelemetryClient _telemetryClient;
+        private readonly PetService _petService;
 
-        public PetController()
+        public PetController(PetService petService)
         {
+            _petService = petService;
             _telemetryClient = new TelemetryClient();
         }
 
         [HttpGet]
-        public IEnumerable<Pet> GetPets()
+        public async Task<IEnumerable<Pet>> GetPetsAsync()
         {
-            throw new NotImplementedException();
+            return await _petService.ListPetsAsync();
         }
 
         [HttpPost]
@@ -31,7 +31,17 @@ namespace MyNewHome.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            throw new NotImplementedException();
+            pet = await _petService.AddPetAsync(pet);
+
+            return CreatedAtAction("GetPetsAsync", new { id = pet.Id }, pet);
+        }
+
+        [HttpPost("recognize")]
+        public async Task<ActionResult<string>> RecognizePetType([FromBody] Pet pet)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            pet = await _petService.AddPetAsync(pet);
 
             return CreatedAtAction("GetPets", new { id = pet.Id }, pet);
         }

@@ -2,6 +2,27 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "buildPwa",
+      "type": "npm",
+      "dependsOn": "buildApi",
+      "script": "start",
+      "path": "MyNewHome.API/ClientApp/",
+      "problemMatcher": []
+    },
+    {
+      "label": "buildApi",
+      "command": "dotnet build",
+      "type": "shell",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$msCompile",
+      "options": {
+        "cwd": "${workspaceFolder}/MyNewHome.API"
+      }
+    },
+    {
       "label": "clean",
       "command": "dotnet clean",
       "type": "shell",

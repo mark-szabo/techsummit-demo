@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
 import PetCard from "./PetCard";
+import AddPetDialog from "./AddPetDialog";
 
 const styles = theme => ({
   card: {
@@ -25,6 +28,11 @@ const styles = theme => ({
   },
   readyText: {
     marginLeft: "58px"
+  },
+  fab: {
+    position: "absolute",
+    bottom: theme.spacing.unit * 2,
+    right: theme.spacing.unit * 2
   }
 });
 
@@ -33,7 +41,16 @@ class Home extends Component {
 
   state = {
     pets: [],
-    loading: true
+    loading: true,
+    dialogOpen: false
+  };
+
+  handleDialogOpen = () => {
+    this.setState({ dialogOpen: true });
+  };
+
+  handleDialogClose = () => {
+    this.setState({ dialogOpen: false });
   };
 
   async componentDidMount() {
@@ -49,23 +66,33 @@ class Home extends Component {
 
   render() {
     const { classes } = this.props;
-    const { pets } = this.state;
+    const { pets, dialogOpen } = this.state;
 
     return (
-      <Grid
-        container
-        direction="row"
-        justify="flex-start"
-        alignItems="flex-start"
-        spacing={16}
-        className={classes.grid}
-      >
-        {pets.map(pet => (
-          <Grid item key={pet.id} className={classes.card}>
-            <PetCard pet={pet} />
-          </Grid>
-        ))}
-      </Grid>
+      <>
+        <Grid
+          container
+          direction="row"
+          justify="flex-start"
+          alignItems="flex-start"
+          spacing={16}
+          className={classes.grid}
+        >
+          {pets.map(pet => (
+            <Grid item key={pet.id} className={classes.card}>
+              <PetCard pet={pet} />
+            </Grid>
+          ))}
+        </Grid>
+        <Fab
+          className={classes.fab}
+          color="primary"
+          onClick={this.handleDialogOpen}
+        >
+          <AddIcon />
+        </Fab>
+        <AddPetDialog open={dialogOpen} handleClose={this.handleDialogClose} />
+      </>
     );
   }
 }

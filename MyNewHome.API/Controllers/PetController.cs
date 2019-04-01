@@ -16,7 +16,7 @@ using MyNewHome.ClassLibrary;
 
 namespace MyNewHome.Controllers
 {
-    [Route("api/pet")]
+    [Route("api/pets")]
     [Produces("application/json")]
     [ApiController]
     public class PetController : ControllerBase
@@ -27,6 +27,7 @@ namespace MyNewHome.Controllers
         private readonly HttpClient _httpClient;
         private readonly CustomVisionPredictionClient _customVision;
         private readonly Guid _customVisionId;
+        private readonly Uri _imageCdnHost;
 
         public PetController(PetService petService, IConfiguration configuration)
         {
@@ -46,6 +47,7 @@ namespace MyNewHome.Controllers
             };
 
             _customVisionId = new Guid(configuration["CustomVision:ProjectId"]);
+            _imageCdnHost = new Uri(configuration["ImageCdnHost"]);
         }
 
         [HttpGet]
@@ -84,7 +86,8 @@ namespace MyNewHome.Controllers
 
             var blob = container.GetBlockBlobReference(Guid.NewGuid().ToString() + "." + ext);
             await blob.UploadFromStreamAsync(image.OpenReadStream());
-            var url = blob.Uri.AbsoluteUri.ToString();
+
+            var url = new Uri(_imageCdnHost, blob.Uri.PathAndQuery).AbsoluteUri.ToString();
 
             var prediction = await _customVision.ClassifyImageUrlAsync(_customVisionId, "Iteration1", new ImageUrl(url));
 

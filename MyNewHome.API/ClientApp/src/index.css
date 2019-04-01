@@ -1,0 +1,55 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+a,
+a:active,
+a:focus,
+a:hover,
+a:visited {
+  text-decoration: none;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+iframe {
+  border: 0;
+}
+
+.primary {
+  background-color: #80d8ff;
+  color: #000000;
+}
+
+.primary-light {
+  background-color: #b5ffff;
+  color: #000000;
+}
+
+.primary-dark {
+  background-color: #49a7cc;
+  color: #000000;
+}
+
+@media (min-width: 960px) {
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+  }
+
+  ::-webkit-scrollbar:vertical {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar:horizontal {
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+  }
+}

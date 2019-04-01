@@ -1,26 +1,77 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import PetCard from "./PetCard";
 
-export class Home extends Component {
+const styles = theme => ({
+  card: {
+    [theme.breakpoints.down("sm")]: {
+      minWidth: "100%",
+      maxWidth: "100%"
+    },
+    [theme.breakpoints.up("md")]: {
+      minWidth: "inherit",
+      maxWidth: "inherit"
+    }
+  },
+  grid: {
+    maxHeight: "calc(100% + 48px)",
+    width: "calc(100% + 48px)",
+    margin: "-24px",
+    padding: "8px",
+    overflow: "auto",
+    justifyContent: "center"
+  },
+  readyText: {
+    marginLeft: "58px"
+  }
+});
+
+class Home extends Component {
   static displayName = Home.name;
 
-  render () {
+  state = {
+    pets: [],
+    loading: true
+  };
+
+  async componentDidMount() {
+    document.getElementsByTagName("main")[0].style.overflow = "hidden";
+
+    const response = await fetch("api/pets");
+    this.setState({ pets: await response.json(), loading: false });
+  }
+
+  componentWillUnmount() {
+    document.getElementsByTagName("main")[0].style.overflow = "auto";
+  }
+
+  render() {
+    const { classes } = this.props;
+    const { pets } = this.state;
+
     return (
-      <div>
-        <h1>Hello, world!</h1>
-        <p>Welcome to your new single-page application, built with:</p>
-        <ul>
-          <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for cross-platform server-side code</li>
-          <li><a href='https://facebook.github.io/react/'>React</a> for client-side code</li>
-          <li><a href='http://getbootstrap.com/'>Bootstrap</a> for layout and styling</li>
-        </ul>
-        <p>To help you get started, we have also set up:</p>
-        <ul>
-          <li><strong>Client-side navigation</strong>. For example, click <em>Counter</em> then <em>Back</em> to return here.</li>
-          <li><strong>Development server integration</strong>. In development mode, the development server from <code>create-react-app</code> runs in the background automatically, so your client-side resources are dynamically built on demand and the page refreshes when you modify any file.</li>
-          <li><strong>Efficient production builds</strong>. In production mode, development-time features are disabled, and your <code>dotnet publish</code> configuration produces minified, efficiently bundled JavaScript files.</li>
-        </ul>
-        <p>The <code>ClientApp</code> subdirectory is a standard React application based on the <code>create-react-app</code> template. If you open a command prompt in that directory, you can run <code>npm</code> commands such as <code>npm test</code> or <code>npm install</code>.</p>
-      </div>
+      <Grid
+        container
+        direction="row"
+        justify="flex-start"
+        alignItems="flex-start"
+        spacing={16}
+        className={classes.grid}
+      >
+        {pets.map(pet => (
+          <Grid item key={pet.id} className={classes.card}>
+            <PetCard pet={pet} />
+          </Grid>
+        ))}
+      </Grid>
     );
   }
 }
+
+Home.propTypes = {
+  classes: PropTypes.object.isRequired // eslint-disable-line react/forbid-prop-types
+};
+
+export default withStyles(styles)(Home);

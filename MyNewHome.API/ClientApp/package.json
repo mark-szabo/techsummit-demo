@@ -2,12 +2,37 @@
   "name": "my-new-home",
   "version": "0.1.0",
   "private": true,
+  "description": "Mark Szabo's demo at the Microsoft Tech Summit Budapest 2019 developer conference in the Application Development section demonstarting the power of Azure Platform-as-a-Service solutions.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mark-szabo/techsummit-demo"
+  },
+  "keywords": [
+    "techsummit",
+    "microsoft",
+    "azure",
+    "demo",
+    "paas",
+    "pwa",
+    "react",
+    "aspnetcore2.2"
+  ],
+  "author": {
+    "name": "Microsoft",
+    "url": "https://www.microsoft.com"
+  },
+  "contributors": [
+    "Mark Szabo"
+  ],
+  "coyright": "Copyright (c) 2019 Microsoft",
   "dependencies": {
-    "bootstrap": "^4.3.1",
-    "jquery": "3.3.1",
+    "@material-ui/core": "^3.9.2",
+    "@material-ui/icons": "^3.0.2",
+    "applicationinsights-js": "^1.0.20",
+    "moment": "^2.24.0",
+    "prop-types": "^15.6.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-router-bootstrap": "^0.25.0",
     "react-router-dom": "^5.0.0",
     "react-scripts": "^2.1.8",
     "reactstrap": "^7.1.0",

@@ -23,6 +23,9 @@ namespace MyNewHome.ClassLibrary
         [JsonProperty(PropertyName = "imageUrl")]
         public string ImageUrl { get; set; }
 
+        [JsonProperty(PropertyName = "published")]
+        public bool Published { get; set; }
+
         public override string ToString() => JsonConvert.SerializeObject(this);
     }
 }

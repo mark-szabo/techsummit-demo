@@ -12,7 +12,9 @@ using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Queue;
 using MyNewHome.ClassLibrary;
+using Newtonsoft.Json;
 
 namespace MyNewHome.Controllers
 {
@@ -23,11 +25,10 @@ namespace MyNewHome.Controllers
     {
         private readonly TelemetryClient _telemetryClient;
         private readonly PetService _petService;
-        private readonly CloudBlobClient _storage;
+        private readonly CloudStorageAccount _storage;
         private readonly HttpClient _httpClient;
         private readonly CustomVisionPredictionClient _customVision;
         private readonly Guid _customVisionId;
-        private readonly Uri _imageCdnHost;
 
         public PetController(PetService petService, IConfiguration configuration)
         {
@@ -36,8 +37,7 @@ namespace MyNewHome.Controllers
             _telemetryClient = new TelemetryClient();
 
             _storage = CloudStorageAccount
-                .Parse(configuration["StorageConnectionString"])
-                .CreateCloudBlobClient();
+                .Parse(configuration["StorageConnectionString"]);
 
 
             _customVision = new CustomVisionPredictionClient(_httpClient, false)
@@ -47,7 +47,6 @@ namespace MyNewHome.Controllers
             };
 
             _customVisionId = new Guid(configuration["CustomVision:ProjectId"]);
-            _imageCdnHost = new Uri(configuration["ImageCdnHost"]);
         }
 
         [HttpGet]
@@ -63,6 +62,16 @@ namespace MyNewHome.Controllers
 
             pet = await _petService.AddPetAsync(pet);
 
+            // Retrieve a reference to a queue
+            var queue = _storage.CreateCloudQueueClient().GetQueueReference("newpets");
+
+            // Create the queue if it doesn't already exist
+            await queue.CreateIfNotExistsAsync();
+
+            // Create a message and add it to the queue
+            var message = new CloudQueueMessage(pet.ToString());
+            await queue.AddMessageAsync(message);
+
             return CreatedAtAction("GetPetsAsync", new { id = pet.Id }, pet);
         }
 
@@ -74,21 +83,25 @@ namespace MyNewHome.Controllers
             var image = Request?.Form?.Files?[0];
             if (image == null) return BadRequest();
 
-            var container = _storage.GetContainerReference("pets");
+            // Retrieve a reference to a container
+            var container = _storage.CreateCloudBlobClient().GetContainerReference("pets");
+
+            // Create the container if it doesn't already exist
             await container.CreateIfNotExistsAsync();
-            await container.SetPermissionsAsync(new BlobContainerPermissions
-            {
-                PublicAccess = BlobContainerPublicAccessType.Blob
-            });
+
+            // Set container access level
+            await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
 
             string ext = GetImageExtension(image.ContentType);
             if (ext == null) return BadRequest();
 
+            // Upload image from stream with a generated filename
             var blob = container.GetBlockBlobReference(Guid.NewGuid().ToString() + "." + ext);
             await blob.UploadFromStreamAsync(image.OpenReadStream());
 
-            var url = new Uri(_imageCdnHost, blob.Uri.PathAndQuery).AbsoluteUri.ToString();
+            var url = blob.Uri.AbsoluteUri.ToString();
 
+            // Send image to Custom Vision Machine Learning
             var prediction = await _customVision.ClassifyImageUrlAsync(_customVisionId, "Iteration1", new ImageUrl(url));
 
             var tag = prediction.Predictions.OrderByDescending(p => p.Probability).First();

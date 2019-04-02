@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.28714.193
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyNewHome.API", "MyNewHome.API\MyNewHome.API.csproj", "{948E421D-33CD-42F7-BC66-AC8A22413B9A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyNewHome.Functions", "MyNewHome.Functions\MyNewHome.Functions.csproj", "{D700F95F-0A7B-4BDF-9BF2-9A96F6E3E928}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyNewHome.Functions", "MyNewHome.Functions\MyNewHome.Functions.csproj", "{D700F95F-0A7B-4BDF-9BF2-9A96F6E3E928}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyNewHome.ClassLibrary", "MyNewHome.ClassLibrary\MyNewHome.ClassLibrary.csproj", "{A745459B-D88B-47CE-8AAD-8AD911E133B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyNewHome.ClassLibrary", "MyNewHome.ClassLibrary\MyNewHome.ClassLibrary.csproj", "{A745459B-D88B-47CE-8AAD-8AD911E133B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

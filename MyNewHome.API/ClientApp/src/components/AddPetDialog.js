@@ -4,16 +4,18 @@ import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
 import withMobileDialog from "@material-ui/core/withMobileDialog";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
+import SnackbarContent from "@material-ui/core/SnackbarContent";
 import Select from "@material-ui/core/Select";
 import CloseIcon from "@material-ui/icons/Close";
+import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
+import green from "@material-ui/core/colors/green";
+import Spinner from "./Spinner";
 
 const styles = theme => ({
   input: {
@@ -55,8 +57,45 @@ const styles = theme => ({
       width: 220
     }
   },
-  dateField: {
-    minWidth: 220
+  inputField: {
+    [theme.breakpoints.down("sm")]: {
+      width: "100%"
+    },
+    [theme.breakpoints.up("md")]: {
+      width: 220
+    }
+  },
+  uploadButton: {
+    marginTop: 24
+  },
+  snackbar: {
+    backgroundColor: green[600],
+    minWidth: 200,
+    maxWidth: 300,
+    marginBottom: theme.spacing.unit * 3
+  },
+  message: {
+    display: "flex",
+    alignItems: "center"
+  },
+  emoji: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit
+  },
+  center: {
+    display: "grid",
+    placeItems: "center",
+    textAlign: "center",
+    height: "80%"
+  },
+  errorIcon: {
+    margin: theme.spacing.unit,
+    color: "#BDBDBD",
+    width: "100px",
+    height: "100px"
+  },
+  errorText: {
+    color: "#9E9E9E"
   }
 });
 
@@ -69,12 +108,17 @@ class AddPetDialog extends React.Component {
     birthdate: "",
     contactEmail: "",
     type: "0",
-    file: ""
+    file: "",
+    loading: false,
+    predictionMessage: "",
+    error: false
   };
 
   componentDidMount() {}
 
   async handleSave() {
+    this.handleLoading(true);
+
     const payload = {
       name: this.state.name,
       birthdate: this.state.birthdate,
@@ -83,49 +127,74 @@ class AddPetDialog extends React.Component {
       imageUrl: this.state.imageUrl
     };
 
-    await fetch(`api/pets`, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
+    try {
+      await fetch(`api/pets`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
 
-    this.props.handleClose();
+    this.handleClose();
+    this.handleLoading(false);
   }
 
   async handleUploadImage(e) {
+    this.handleLoading(true);
+
     const formData = new FormData();
     formData.append("image", e.target.files[0]);
 
-    const response = await fetch(`api/pets/upload`, {
-      method: "POST",
-      body: formData,
-      headers: {
-        Accept: "application/json"
+    try {
+      const response = await fetch(`api/pets/upload`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json"
+        }
+      });
+
+      if (!response.ok) this.setState({ error: true });
+      else {
+        const result = await response.json();
+        console.log(result);
+
+        this.setState({ imageUrl: result.url });
+
+        if (result.probability > 0.5) {
+          let type = "";
+          let predictionMessage = "";
+          switch (result.type) {
+            case "dog":
+              type = "0";
+              predictionMessage = "Látom! Ez egy kutyus! 🐶";
+              break;
+            case "cat":
+              type = "1";
+              predictionMessage = "Látom! Ez egy cica! 🐱";
+              break;
+            default:
+              break;
+          }
+
+          this.setState({ type: type, predictionMessage: predictionMessage });
+        }
       }
-    });
-
-    const result = await response.json();
-    console.log(result);
-
-    this.setState({ imageUrl: result.url });
-
-    if (result.probability > 0.5) {
-      let type = "";
-      switch (result.type) {
-        case "dog":
-          type = "0";
-          break;
-        case "cat":
-          type = "1";
-          break;
-        default:
-          break;
-      }
-
-      this.setState({ type: type });
+    } catch (error) {
+      console.log(error);
     }
+
+    this.handleLoading(false);
+  }
+
+  handleLoading(on) {
+    this.setState({
+      loading: on
+    });
   }
 
   handleTypeChange = event => {
@@ -154,6 +223,17 @@ class AddPetDialog extends React.Component {
 
   handleClose = () => {
     this.props.handleClose();
+    this.setState({
+      imageUrl: "",
+      name: "",
+      birthdate: "",
+      contactEmail: "",
+      type: "0",
+      file: "",
+      loading: false,
+      predictionMessage: "",
+      error: false
+    });
   };
 
   preventDefault = event => {
@@ -161,7 +241,15 @@ class AddPetDialog extends React.Component {
   };
 
   render() {
-    const { imageUrl, name, type, contactEmail } = this.state;
+    const {
+      imageUrl,
+      name,
+      type,
+      contactEmail,
+      predictionMessage,
+      loading,
+      error
+    } = this.state;
     const { open, fullScreen, classes } = this.props;
 
     return (
@@ -172,9 +260,33 @@ class AddPetDialog extends React.Component {
               <CloseIcon />
             </IconButton>
           </div>
-          {!imageUrl ? (
+          {loading ? (
+            <Spinner />
+          ) : error ? (
+            <div className={classes.center}>
+              <div>
+                <ErrorOutlineIcon className={classes.errorIcon} />
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  className={classes.errorText}
+                >
+                  Hiba történt
+                  <span
+                    role="img"
+                    aria-label="sad face emoji"
+                    className={classes.emoji}
+                  >
+                    😫
+                  </span>
+                </Typography>
+              </div>
+            </div>
+          ) : !imageUrl ? (
             <>
-              <h1>File Upload</h1>
+              <Typography variant="h3" gutterBottom>
+                Tölts fel egy fotót!
+              </Typography>
               <input
                 accept="image/*"
                 className={classes.input}
@@ -183,34 +295,71 @@ class AddPetDialog extends React.Component {
                 onChange={e => this.handleUploadImage(e)}
               />
               <label htmlFor="upload">
-                <Button variant="contained" component="span">
-                  Upload
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component="span"
+                  className={classes.uploadButton}
+                >
+                  Feltöltés
                 </Button>
               </label>
             </>
           ) : (
-            <div>
+            <>
+              {predictionMessage && (
+                <SnackbarContent
+                  className={classes.snackbar}
+                  aria-describedby="client-snackbar"
+                  message={
+                    <span id="client-snackbar" className={classes.message}>
+                      {predictionMessage}
+                    </span>
+                  }
+                />
+              )}
               <div className={classes.formControl}>
-                <InputLabel htmlFor="type">Type</InputLabel>
+                <div>
+                  <InputLabel htmlFor="type">Típus</InputLabel>
+                </div>
                 <Select
                   required
                   value={type}
                   onChange={this.handleTypeChange}
+                  className={classes.inputField}
                   inputProps={{
                     name: "type",
                     id: "type"
                   }}
                 >
-                  <MenuItem value="0">Dog</MenuItem>
-                  <MenuItem value="1">Cat</MenuItem>
+                  <MenuItem value="0">
+                    <span
+                      role="img"
+                      aria-label="dog emoji"
+                      className={classes.emoji}
+                    >
+                      🐶
+                    </span>
+                    Kutyus
+                  </MenuItem>
+                  <MenuItem value="1">
+                    <span
+                      role="img"
+                      aria-label="cat emoji"
+                      className={classes.emoji}
+                    >
+                      🐱
+                    </span>
+                    Macsek
+                  </MenuItem>
                 </Select>
               </div>
               <div className={classes.formControl}>
                 <TextField
                   id="name"
-                  label="Name"
+                  label="Név"
                   value={name}
-                  className={classes.textField}
+                  className={classes.inputField}
                   margin="normal"
                   onChange={this.handleNameChange}
                 />
@@ -218,31 +367,38 @@ class AddPetDialog extends React.Component {
               <div className={classes.formControl}>
                 <TextField
                   id="birthDate"
-                  label="Birthdate"
+                  label="Születési dátum"
                   type="date"
                   InputLabelProps={{
                     shrink: true
                   }}
                   onChange={this.handleBirthdateChange}
-                  className={classes.dateField}
+                  className={classes.inputField}
                 />
               </div>
               <div className={classes.formControl}>
                 <TextField
                   id="contactEmail"
-                  label="Contact Email"
+                  label="Email"
                   value={contactEmail}
-                  className={classes.textField}
+                  className={classes.inputField}
                   margin="normal"
                   onChange={this.handleContactEmailChange}
                 />
+                <Typography variant="caption" gutterBottom>
+                  Demó app. Ne adj meg valós email címet!
+                </Typography>
               </div>
-            </div>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => this.handleSave()}
+              >
+                Kész!
+              </Button>
+            </>
           )}
         </DialogContent>
-        <DialogActions className={classes.actions}>
-          <Button onClick={() => this.handleSave()}>Save</Button>
-        </DialogActions>
       </Dialog>
     );
   }

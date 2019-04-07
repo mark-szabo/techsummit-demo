@@ -1,6 +1,5 @@
 ﻿import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -80,14 +79,16 @@ class PetCard extends Component {
             }
           />
           <CardActions className={classes.cardActions}>
-            <Button
-              component={Link}
-              to={`mailto:${pet.contactEmail}`}
-              size="small"
-              color="primary"
-            >
-              Contact
-            </Button>
+            <a href={`mailto:${pet.contactEmail}`}>
+              <Button
+                variant="outlined"
+                size="small"
+                color="primary"
+                aria-label="Send an email"
+              >
+                Email
+              </Button>
+            </a>
           </CardActions>
         </Card>
       </Grow>

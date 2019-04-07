@@ -30,9 +30,9 @@ const styles = theme => ({
     marginLeft: "58px"
   },
   fab: {
-    position: "absolute",
-    bottom: theme.spacing.unit * 2,
-    right: theme.spacing.unit * 2
+    position: "fixed",
+    bottom: theme.spacing.unit * 3,
+    right: theme.spacing.unit * 3
   }
 });
 
@@ -88,6 +88,7 @@ class Home extends Component {
           className={classes.fab}
           color="primary"
           onClick={this.handleDialogOpen}
+          aria-label="Add new pet"
         >
           <AddIcon />
         </Fab>

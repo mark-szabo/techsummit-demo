@@ -102,11 +102,18 @@ namespace MyNewHome.Controllers
             var url = blob.Uri.AbsoluteUri.ToString();
 
             // Send image to Custom Vision Machine Learning
-            var prediction = await _customVision.ClassifyImageUrlAsync(_customVisionId, "Iteration1", new ImageUrl(url));
+            try
+            {
+                var prediction = await _customVision.ClassifyImageUrlAsync(_customVisionId, "Iteration1", new ImageUrl(url));
 
-            var tag = prediction.Predictions.OrderByDescending(p => p.Probability).First();
+                var tag = prediction.Predictions.OrderByDescending(p => p.Probability).First();
 
-            return Ok(new { url, type = tag.TagName, probability = tag.Probability });
+                return Ok(new { url, type = tag.TagName, probability = tag.Probability });
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         private string GetImageExtension(string contentType)

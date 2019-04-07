@@ -35,13 +35,15 @@ namespace MyNewHome.ClassLibrary
         {
             // Selecting all pets is a cross partition query. 
             // We set the max concurrency to 4, which controls the max number of partitions that our client will query in parallel.
-            return await _container.Items.CreateItemQuery<Pet>("SELECT * FROM c WHERE c.published", maxConcurrency: 4, maxItemCount: 20).ToList();
+            return await _container.Items.CreateItemQuery<Pet>("SELECT * FROM c WHERE c.published ORDER BY c._ts DESC", maxConcurrency: 4, maxItemCount: 20).ToList();
         }
 
         public async Task<Pet> AddPetAsync(Pet pet)
         {
             if (pet.Id == null) pet.Id = Guid.NewGuid().ToString();
             pet.Published = false;
+
+            if (pet.Birthdate > DateTime.Now) throw new ArgumentException("Pet birthdate cannot be in the future.", "birthdate");
 
             return await _container.Items.CreateItemAsync((int)pet.Type, pet);
         }

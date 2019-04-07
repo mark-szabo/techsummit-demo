@@ -49,73 +49,73 @@ namespace MyNewHome.Controllers
             _customVisionId = new Guid(configuration["CustomVision:ProjectId"]);
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<Pet>> GetPetsAsync()
-        {
-            return await _petService.ListPetsAsync();
-        }
+        //[HttpGet]
+        //public async Task<IEnumerable<Pet>> GetPetsAsync()
+        //{
+        //    return await _petService.ListPetsAsync();
+        //}
 
-        [HttpPost]
-        public async Task<ActionResult<Pet>> PostPet([FromBody] Pet pet)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+        //[HttpPost]
+        //public async Task<ActionResult<Pet>> PostPet([FromBody] Pet pet)
+        //{
+        //    if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            pet = await _petService.AddPetAsync(pet);
+        //    pet = await _petService.AddPetAsync(pet);
 
-            // Retrieve a reference to a queue
-            var queue = _storage.CreateCloudQueueClient().GetQueueReference("newpets");
+        //    // Retrieve a reference to a queue
+        //    var queue = _storage.CreateCloudQueueClient().GetQueueReference("newpets");
 
-            // Create the queue if it doesn't already exist
-            await queue.CreateIfNotExistsAsync();
+        //    // Create the queue if it doesn't already exist
+        //    await queue.CreateIfNotExistsAsync();
 
-            // Create a message and add it to the queue
-            var message = new CloudQueueMessage(pet.ToString());
-            await queue.AddMessageAsync(message);
+        //    // Create a message and add it to the queue
+        //    var message = new CloudQueueMessage(pet.ToString());
+        //    await queue.AddMessageAsync(message);
 
-            return CreatedAtAction("GetPetsAsync", new { id = pet.Id }, pet);
-        }
+        //    return CreatedAtAction("GetPetsAsync", new { id = pet.Id }, pet);
+        //}
 
-        [HttpPost("upload")]
-        public async Task<ActionResult> UploadAndRecognizeImage()
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+        //[HttpPost("upload")]
+        //public async Task<ActionResult> UploadAndRecognizeImage()
+        //{
+        //    if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var image = Request?.Form?.Files?[0];
-            if (image == null) return BadRequest();
+        //    var image = Request?.Form?.Files?[0];
+        //    if (image == null) return BadRequest();
 
-            // Retrieve a reference to a container
-            var container = _storage.CreateCloudBlobClient().GetContainerReference("pets");
+        //    // Retrieve a reference to a container
+        //    var container = _storage.CreateCloudBlobClient().GetContainerReference("pets");
 
-            // Create the container if it doesn't already exist
-            await container.CreateIfNotExistsAsync();
+        //    // Create the container if it doesn't already exist
+        //    await container.CreateIfNotExistsAsync();
 
-            // Set container access level
-            await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+        //    // Set container access level
+        //    await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
 
-            string ext = GetImageExtension(image.ContentType);
-            if (ext == null) return BadRequest();
+        //    string ext = GetImageExtension(image.ContentType);
+        //    if (ext == null) return BadRequest();
 
-            // Upload image from stream with a generated filename
-            var blob = container.GetBlockBlobReference(Guid.NewGuid().ToString() + "." + ext);
-            await blob.UploadFromStreamAsync(image.OpenReadStream());
+        //    // Upload image from stream with a generated filename
+        //    var blob = container.GetBlockBlobReference(Guid.NewGuid().ToString() + "." + ext);
+        //    await blob.UploadFromStreamAsync(image.OpenReadStream());
 
-            var url = blob.Uri.AbsoluteUri.ToString();
+        //    var url = blob.Uri.AbsoluteUri.ToString();
 
-            // Send image to Custom Vision Machine Learning
-            try
-            {
-                var prediction = await _customVision.ClassifyImageUrlAsync(_customVisionId, "Iteration1", new ImageUrl(url));
+        //    // Send image to Custom Vision Machine Learning
+        //    try
+        //    {
+        //        var prediction = await _customVision.ClassifyImageUrlAsync(_customVisionId, "Iteration1", new ImageUrl(url));
 
-                var tag = prediction.Predictions.OrderByDescending(p => p.Probability).First();
+        //        var tag = prediction.Predictions.OrderByDescending(p => p.Probability).First();
 
-                return Ok(new { url, type = tag.TagName, probability = tag.Probability });
-            }
-            catch (Exception e)
-            {
-                _telemetryClient.TrackException(e);
-                throw e;
-            }
-        }
+        //        return Ok(new { url, type = tag.TagName, probability = tag.Probability });
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _telemetryClient.TrackException(e);
+        //        throw e;
+        //    }
+        //}
 
         private string GetImageExtension(string contentType)
         {

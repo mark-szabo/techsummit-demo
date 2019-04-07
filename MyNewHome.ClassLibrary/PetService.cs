@@ -31,35 +31,35 @@ namespace MyNewHome.ClassLibrary
             return await _container.Items.ReadItemAsync<Pet>((int)type, id);
         }
 
-        public async Task<IEnumerable<Pet>> ListPetsAsync()
-        {
-            // Selecting all pets is a cross partition query. 
-            // We set the max concurrency to 4, which controls the max number of partitions that our client will query in parallel.
-            return await _container.Items.CreateItemQuery<Pet>("SELECT * FROM c WHERE c.published ORDER BY c._ts DESC", maxConcurrency: 4, maxItemCount: 20).ToList();
-        }
+        //public async Task<IEnumerable<Pet>> ListPetsAsync()
+        //{
+        //    // Selecting all pets is a cross partition query. 
+        //    // We set the max concurrency to 4, which controls the max number of partitions that our client will query in parallel.
+        //    return await _container.Items.CreateItemQuery<Pet>("SELECT * FROM c WHERE c.published ORDER BY c._ts DESC", maxConcurrency: 4, maxItemCount: 20).ToList();
+        //}
 
-        public async Task<Pet> AddPetAsync(Pet pet)
-        {
-            if (pet.Id == null) pet.Id = Guid.NewGuid().ToString();
-            pet.Published = false;
+        //public async Task<Pet> AddPetAsync(Pet pet)
+        //{
+        //    if (pet.Id == null) pet.Id = Guid.NewGuid().ToString();
+        //    pet.Published = false;
 
-            if (pet.Birthdate > DateTime.Now) throw new ArgumentException("Pet birthdate cannot be in the future.", "birthdate");
+        //    if (pet.Birthdate > DateTime.Now) throw new ArgumentException("Pet birthdate cannot be in the future.", "birthdate");
 
-            var newPet = await _container.Items.CreateItemAsync((int)pet.Type, pet);
+        //    var newPet = await _container.Items.CreateItemAsync((int)pet.Type, pet);
 
-            _telemetryClient.TrackEvent(
-                "New pet added.",
-                new Dictionary<string, string>
-                {
-                    { "Pet type", pet.Type.ToString() },
-                },
-                new Dictionary<string, double>
-                {
-                    { "New pet", 1 },
-                });
+        //    _telemetryClient.TrackEvent(
+        //        "New pet added.",
+        //        new Dictionary<string, string>
+        //        {
+        //            { "Pet type", pet.Type.ToString() },
+        //        },
+        //        new Dictionary<string, double>
+        //        {
+        //            { "New pet", 1 },
+        //        });
 
-            return newPet;
-        }
+        //    return newPet;
+        //}
 
         public async Task<Pet> UpdatePetAsync(Pet pet)
         {

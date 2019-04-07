@@ -28,37 +28,37 @@ namespace MyNewHome.Functions
         [FunctionName("NewPetFunction")]
         public static async Task Run([QueueTrigger("newpets", Connection = "StorageConnectionString")]string queueItem, ILogger log)
         {
-            // Deserialize queue message
-            var petFromQueue = JsonConvert.DeserializeObject<Pet>(queueItem);
+            //// Deserialize queue message
+            //var petFromQueue = JsonConvert.DeserializeObject<Pet>(queueItem);
 
-            // Download image
-            var blob = new CloudBlockBlob(new Uri(petFromQueue.ImageUrl), storage);
-            var image = await blob.DownloadBlobAsync();
+            //// Download image
+            //var blob = new CloudBlockBlob(new Uri(petFromQueue.ImageUrl), storage);
+            //var image = await blob.DownloadBlobAsync();
 
-            // Call Cognitive Services Computer Vision
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", computerVisionApiKey);
-            var response = await client.PostAsync(ComputerVisionUrl, image);
+            //// Call Cognitive Services Computer Vision
+            //client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", computerVisionApiKey);
+            //var response = await client.PostAsync(ComputerVisionUrl, image);
 
-            if (response.IsSuccessStatusCode)
-            {
-                // Upload image to blob
-                var thumbnail = await response.Content.ReadAsStreamAsync();
-                await blob.UploadFromStreamAsync(thumbnail);
+            //if (response.IsSuccessStatusCode)
+            //{
+            //    // Upload image to blob
+            //    var thumbnail = await response.Content.ReadAsStreamAsync();
+            //    await blob.UploadFromStreamAsync(thumbnail);
 
-                //// Swap url host to CDN
-                //var url = new Uri(imageCdnHost, blob.Uri.PathAndQuery).AbsoluteUri.ToString();
+            //    //// Swap url host to CDN
+            //    //var url = new Uri(imageCdnHost, blob.Uri.PathAndQuery).AbsoluteUri.ToString();
 
-                // Save url to Cosmos DB and publish
-                var pet = await petService.GetPetAsync(petFromQueue.Id, petFromQueue.Type);
-                //pet.ImageUrl = url;
-                pet.Published = true;
-                await petService.UpdatePetAsync(pet);
-            }
-            else
-            {
-                var result = await response.Content.ReadAsStringAsync();
-                log.LogError(result);
-            }
+            //    // Save url to Cosmos DB and publish
+            //    var pet = await petService.GetPetAsync(petFromQueue.Id, petFromQueue.Type);
+            //    //pet.ImageUrl = url;
+            //    pet.Published = true;
+            //    await petService.UpdatePetAsync(pet);
+            //}
+            //else
+            //{
+            //    var result = await response.Content.ReadAsStringAsync();
+            //    log.LogError(result);
+            //}
         }
 
         static async Task<ByteArrayContent> DownloadBlobAsync(this CloudBlockBlob blob)

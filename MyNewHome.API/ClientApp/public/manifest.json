@@ -12,6 +12,11 @@
   "background_color": "#4dd0e1",
   "icons": [
     {
+      "src": "/images/icon512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
       "src": "/images/icon192.png",
       "sizes": "192x192",
       "type": "image/png"

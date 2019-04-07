@@ -12,11 +12,11 @@ workbox.core.setCacheNameDetails({
 // Don't forget to increase the revision number of index.html (aka. '/')
 // as it is needed to include the newly genereted js and css files.
 // Error would be thrown: Refused to execute script from '...' because its MIME type ('text/html') is not executable, and strict MIME type checking is enabled.
-const build = "2.0.42";
+const build = "1.0.2";
 console.log(`Build: ${build}`);
 workbox.precaching.precacheAndRoute([
   { url: "/", revision: build.replace(/\./g, "") },
-  { url: "manifest.json", revision: "2" }
+  { url: "manifest.json", revision: "3" }
 ]);
 
 const bgSyncPlugin = new workbox.backgroundSync.Plugin("bgSyncQueue");

@@ -18,9 +18,9 @@ namespace MyNewHome.ClassLibrary
 
         private readonly TelemetryClient _telemetryClient;
 
-        public PetService(string endpointUri, string primaryKey)
+        public PetService(string connectionString)
         {
-            _cosmosClient = new CosmosClient(endpointUri, primaryKey);
+            _cosmosClient = new CosmosClient(connectionString);
             _database = _cosmosClient.Databases.CreateDatabaseIfNotExistsAsync(DatabaseId).GetAwaiter().GetResult();
             _container = _database.Containers.CreateContainerIfNotExistsAsync(ContainerId, PartitionKey).GetAwaiter().GetResult();
             _telemetryClient = new TelemetryClient();
@@ -45,7 +45,20 @@ namespace MyNewHome.ClassLibrary
 
             if (pet.Birthdate > DateTime.Now) throw new ArgumentException("Pet birthdate cannot be in the future.", "birthdate");
 
-            return await _container.Items.CreateItemAsync((int)pet.Type, pet);
+            var newPet = await _container.Items.CreateItemAsync((int)pet.Type, pet);
+
+            _telemetryClient.TrackEvent(
+                "New pet added.",
+                new Dictionary<string, string>
+                {
+                    { "Pet type", pet.Type.ToString() },
+                },
+                new Dictionary<string, double>
+                {
+                    { "New pet", 1 },
+                });
+
+            return newPet;
         }
 
         public async Task<Pet> UpdatePetAsync(Pet pet)

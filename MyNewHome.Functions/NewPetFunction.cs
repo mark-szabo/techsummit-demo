@@ -14,13 +14,12 @@ namespace MyNewHome.Functions
 {
     public static class NewPetFunction
     {
-        private static readonly string cosmosDbUri = Environment.GetEnvironmentVariable("CosmosDbUri");
-        private static readonly string cosmosDbKey = Environment.GetEnvironmentVariable("CosmosDbKey");
+        private static readonly string cosmosConnectionString = Environment.GetEnvironmentVariable("CosmosConnectionString");
         private static readonly string computerVisionApiKey = Environment.GetEnvironmentVariable("ComputerVision");
         private static readonly string storageConnectionString = Environment.GetEnvironmentVariable("StorageConnectionString");
         private static readonly Uri imageCdnHost = new Uri(Environment.GetEnvironmentVariable("ImageCdnHost"));
 
-        private static readonly PetService petService = new PetService(cosmosDbUri, cosmosDbKey);
+        private static readonly PetService petService = new PetService(cosmosConnectionString);
         private static readonly HttpClient client = new HttpClient();
         private static readonly CloudBlobClient storage = CloudStorageAccount.Parse(storageConnectionString).CreateCloudBlobClient();
 

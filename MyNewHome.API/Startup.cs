@@ -21,9 +21,8 @@ namespace MyNewHome.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var endpointUri = Configuration.GetValue<string>("Cosmos:EndpointUri");
-            var primaryKey = Configuration.GetValue<string>("Cosmos:PrimaryKey");
-            services.AddSingleton(new PetService(endpointUri, primaryKey));
+            var cosmosConnectionString = Configuration.GetValue<string>("CosmosConnectionString");
+            services.AddSingleton(new PetService(cosmosConnectionString));
 
             services.AddSingleton(Configuration);
 

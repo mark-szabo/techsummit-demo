@@ -112,6 +112,7 @@ namespace MyNewHome.Controllers
             }
             catch (Exception e)
             {
+                _telemetryClient.TrackException(e);
                 throw e;
             }
         }

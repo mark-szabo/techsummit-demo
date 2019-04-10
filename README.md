@@ -11,3 +11,8 @@ My demo at the Microsoft Tech Summit Budapest 2019 developer conference in the A
 In this demo, we create an application involving diverse services from Azure, including serverless Azure Functions, neural networks trained using Custom Vision, Cognitive Services, Cosmos DB, Application Insights and a lot of other cool services.
 
 ![Architecture diagram](/readme-images/Architecture.png)
+
+## Resources
+
+- [Microsoft REST API Guidelines](https://github.com/Microsoft/api-guidelines/blob/vNext/Guidelines.md)
+- [Get started with Azure for free](https://azure.microsoft.com/en-us/free/)

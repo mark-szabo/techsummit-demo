@@ -30,11 +30,11 @@ namespace MyNewHome.Controllers
         private readonly CustomVisionPredictionClient _customVision;
         private readonly Guid _customVisionId;
 
-        public PetController(PetService petService, IConfiguration configuration)
+        public PetController(PetService petService, IConfiguration configuration, TelemetryClient telemetryClient)
         {
             _petService = petService;
             _httpClient = new HttpClient();
-            _telemetryClient = new TelemetryClient();
+            _telemetryClient = telemetryClient;
 
             _storage = CloudStorageAccount
                 .Parse(configuration["StorageConnectionString"]);

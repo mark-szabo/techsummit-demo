@@ -3,6 +3,8 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Azure.Cosmos;
+using Microsoft.ApplicationInsights;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
@@ -19,7 +21,7 @@ namespace MyNewHome.Functions
         private static readonly string storageConnectionString = Environment.GetEnvironmentVariable("StorageConnectionString");
         private static readonly Uri imageCdnHost = new Uri(Environment.GetEnvironmentVariable("ImageCdnHost"));
 
-        private static readonly PetService petService = new PetService(cosmosConnectionString);
+        private static readonly PetService petService = new PetService(new CosmosClient(cosmosConnectionString), new TelemetryClient());
         private static readonly HttpClient client = new HttpClient();
         private static readonly CloudBlobClient storage = CloudStorageAccount.Parse(storageConnectionString).CreateCloudBlobClient();
 
@@ -33,9 +35,12 @@ namespace MyNewHome.Functions
             var blob = new CloudBlockBlob(new Uri(petFromQueue.ImageUrl), storage);
             var stream = await blob.OpenReadAsync();
 
-            var binaryReader = new BinaryReader(stream);
-            var byteArray = binaryReader.ReadBytes((int)stream.Length);
-            var content = new ByteArrayContent(byteArray);
+            ByteArrayContent content;
+            using (var binaryReader = new BinaryReader(stream))
+            {
+                var byteArray = binaryReader.ReadBytes((int)stream.Length);
+                content = new ByteArrayContent(byteArray);
+            }
             content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
             // Call Cognitive Services Computer Vision

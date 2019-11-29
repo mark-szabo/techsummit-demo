@@ -26,6 +26,7 @@
   ],
   "coyright": "Copyright (c) 2019 Microsoft",
   "dependencies": {
+    "@aspnet/signalr": "1.1.4",
     "@material-ui/core": "^3.9.2",
     "@material-ui/icons": "^3.0.2",
     "applicationinsights-js": "^1.0.20",

@@ -6,6 +6,7 @@ import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import PetCard from "./PetCard";
 import AddPetDialog from "./AddPetDialog";
+import { HubConnectionBuilder } from "@aspnet/signalr";
 
 const styles = theme => ({
   card: {
@@ -56,9 +57,19 @@ class Home extends Component {
   async componentDidMount() {
     document.getElementsByTagName("main")[0].style.overflow = "hidden";
 
+    let signalRConnection = new HubConnectionBuilder()
+      .withUrl("/signalr")
+      .build();
+    signalRConnection.on("refresh", this.refresh);
+    await signalRConnection.start();
+
+    this.refresh();
+  }
+
+  refresh = async () => {      
     const response = await fetch("api/pets");
     this.setState({ pets: await response.json(), loading: false });
-  }
+  };
 
   componentWillUnmount() {
     document.getElementsByTagName("main")[0].style.overflow = "auto";

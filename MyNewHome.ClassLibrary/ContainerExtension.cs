@@ -7,7 +7,12 @@ namespace MyNewHome.ClassLibrary
 {
     public static class ContainerExtension
     {
-        public static async Task<List<T>> GetItemQuery<T>(this Container container, string queryText, string continuationToken = null, QueryRequestOptions requestOptions = null, CancellationToken cancellationToken = default)
+        public static async Task<List<T>> GetItemQuery<T>(
+            this Container container, 
+            string queryText, 
+            string continuationToken = null, 
+            QueryRequestOptions requestOptions = null, 
+            CancellationToken cancellationToken = default)
         {
             var results = new List<T>();
 

@@ -5,6 +5,8 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Azure.Cosmos;
 using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Azure.SignalR.Management;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
@@ -19,6 +21,7 @@ namespace MyNewHome.Functions
         private static readonly string cosmosConnectionString = Environment.GetEnvironmentVariable("CosmosConnectionString");
         private static readonly string computerVisionApiKey = Environment.GetEnvironmentVariable("ComputerVision");
         private static readonly string storageConnectionString = Environment.GetEnvironmentVariable("StorageConnectionString");
+        private static readonly string signalRConnectionString = Environment.GetEnvironmentVariable("SignalRConnectionString");
         private static readonly Uri imageCdnHost = new Uri(Environment.GetEnvironmentVariable("ImageCdnHost"));
 
         private static readonly PetService petService = new PetService(new CosmosClient(cosmosConnectionString), new TelemetryClient());
@@ -63,6 +66,18 @@ namespace MyNewHome.Functions
                 pet.ImageUrl = url;
                 pet.Published = true;
                 await petService.UpdatePetAsync(pet);
+
+                // Let the clients know of hte new pet using SignalR
+                var serviceManager = new ServiceManagerBuilder()
+                    .WithOptions(option =>
+                    {
+                        option.ConnectionString = signalRConnectionString;
+                    })
+                    .Build();
+
+                var hubContext = await serviceManager.CreateHubContextAsync("SignalRHub");
+
+                await hubContext.Clients.All.SendAsync("refresh");
             }
             else
             {

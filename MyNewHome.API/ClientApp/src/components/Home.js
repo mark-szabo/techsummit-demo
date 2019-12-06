@@ -6,7 +6,7 @@ import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import PetCard from "./PetCard";
 import AddPetDialog from "./AddPetDialog";
-import { HubConnectionBuilder } from "@aspnet/signalr";
+import { HubConnectionBuilder } from "@microsoft/signalr";
 
 const styles = theme => ({
   card: {
@@ -65,7 +65,7 @@ class Home extends Component {
         await signalRConnection.start();
     }
     catch (e) {
-      console.error(e);
+      console.warn(e);
     }
 
     this.refresh();

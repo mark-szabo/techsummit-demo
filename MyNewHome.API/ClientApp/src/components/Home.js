@@ -57,11 +57,16 @@ class Home extends Component {
   async componentDidMount() {
     document.getElementsByTagName("main")[0].style.overflow = "hidden";
 
-    let signalRConnection = new HubConnectionBuilder()
-      .withUrl("/signalr")
-      .build();
-    signalRConnection.on("refresh", this.refresh);
-    await signalRConnection.start();
+    try {
+        let signalRConnection = new HubConnectionBuilder()
+          .withUrl("/signalr")
+          .build();
+        signalRConnection.on("refresh", this.refresh);
+        await signalRConnection.start();
+    }
+    catch (e) {
+      console.error(e);
+    }
 
     this.refresh();
   }

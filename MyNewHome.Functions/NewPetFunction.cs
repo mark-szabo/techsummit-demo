@@ -75,7 +75,7 @@ namespace MyNewHome.Functions
                     })
                     .Build();
 
-                var hubContext = await serviceManager.CreateHubContextAsync("SignalRHub");
+                var hubContext = await serviceManager.CreateHubContextAsync("PetHub");
 
                 await hubContext.Clients.All.SendAsync("refresh");
             }

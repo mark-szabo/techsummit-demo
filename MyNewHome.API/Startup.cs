@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MyNewHome.API.Hubs;
 using MyNewHome.ClassLibrary;
 
 namespace MyNewHome.API
@@ -32,8 +31,6 @@ namespace MyNewHome.API
             services.AddSingleton(Configuration);
 
             services.AddRazorPages();
-
-            services.AddSignalR();
 
             services.AddHealthChecks();
 
@@ -67,7 +64,6 @@ namespace MyNewHome.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks("/health");
-                endpoints.MapHub<SignalRHub>("/signalr");
                 endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
             });
 

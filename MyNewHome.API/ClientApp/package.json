@@ -40,7 +40,7 @@
     "rimraf": "^2.6.3"
   },
   "devDependencies": {
-    "ajv": "^6.10.0",
+    "ajv": "^6.12.3",
     "cross-env": "^5.2.0",
     "eslint-config-react-app": "^3.0.8",
     "eslint-plugin-flowtype": "^3.4.2",
